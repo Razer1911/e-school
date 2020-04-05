@@ -215,8 +215,8 @@ public class ShiroConfig {
     public RedisManager redisManager() {
         log.info("===============(2)创建RedisManager,连接Redis..URL= " + host + ":" + port);
         RedisManager redisManager = new RedisManager();
-		redisManager.setHost(host);
-		redisManager.setPort(oConvertUtils.getInt(port));
+//		redisManager.setHost(host);
+//		redisManager.setPort(oConvertUtils.getInt(port));
 		redisManager.setTimeout(0);
         if (!StringUtils.isEmpty(redisPassword)) {
             redisManager.setPassword(redisPassword);

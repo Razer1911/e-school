@@ -61,7 +61,7 @@ public class QuartzJobController {
 
 	/**
 	 * 分页列表查询
-	 * 
+	 *
 	 * @param quartzJob
 	 * @param pageNo
 	 * @param pageSize
@@ -70,17 +70,17 @@ public class QuartzJobController {
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<?> queryPageList(QuartzJob quartzJob, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
+								   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
 		QueryWrapper<QuartzJob> queryWrapper = QueryGenerator.initQueryWrapper(quartzJob, req.getParameterMap());
 		Page<QuartzJob> page = new Page<QuartzJob>(pageNo, pageSize);
 		IPage<QuartzJob> pageList = quartzJobService.page(page, queryWrapper);
-        return Result.ok(pageList);
+		return Result.ok(pageList);
 
 	}
 
 	/**
 	 * 添加定时任务
-	 * 
+	 *
 	 * @param quartzJob
 	 * @return
 	 */
@@ -97,7 +97,7 @@ public class QuartzJobController {
 
 	/**
 	 * 更新定时任务
-	 * 
+	 *
 	 * @param quartzJob
 	 * @return
 	 */
@@ -110,12 +110,12 @@ public class QuartzJobController {
 			log.error(e.getMessage(),e);
 			return Result.error("更新定时任务失败!");
 		}
-	    return Result.ok("更新定时任务成功!");
+		return Result.ok("更新定时任务成功!");
 	}
 
 	/**
 	 * 通过id删除
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -127,13 +127,13 @@ public class QuartzJobController {
 			return Result.error("未找到对应实体");
 		}
 		quartzJobService.deleteAndStopJob(quartzJob);
-        return Result.ok("删除成功!");
+		return Result.ok("删除成功!");
 
 	}
 
 	/**
 	 * 批量删除
-	 * 
+	 *
 	 * @param ids
 	 * @return
 	 */
@@ -147,12 +147,12 @@ public class QuartzJobController {
 			QuartzJob job = quartzJobService.getById(id);
 			quartzJobService.deleteAndStopJob(job);
 		}
-        return Result.ok("删除定时任务成功!");
+		return Result.ok("删除定时任务成功!");
 	}
 
 	/**
 	 * 暂停定时任务
-	 * 
+	 *
 	 * @param jobClassName
 	 * @return
 	 */
@@ -177,7 +177,7 @@ public class QuartzJobController {
 
 	/**
 	 * 启动定时任务
-	 * 
+	 *
 	 * @param jobClassName
 	 * @return
 	 */
@@ -196,19 +196,19 @@ public class QuartzJobController {
 
 	/**
 	 * 通过id查询
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
 	@RequestMapping(value = "/queryById", method = RequestMethod.GET)
 	public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
 		QuartzJob quartzJob = quartzJobService.getById(id);
-        return Result.ok(quartzJob);
+		return Result.ok(quartzJob);
 	}
 
 	/**
 	 * 导出excel
-	 * 
+	 *
 	 * @param request
 	 * @param quartzJob
 	 */
@@ -229,7 +229,7 @@ public class QuartzJobController {
 
 	/**
 	 * 通过excel导入数据
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @return

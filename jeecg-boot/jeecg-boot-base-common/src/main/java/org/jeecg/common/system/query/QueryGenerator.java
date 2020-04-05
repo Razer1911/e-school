@@ -145,7 +145,7 @@ public class QueryGenerator {
 							for (int k=1;k<vals.length;k++) {
 								j = j.or().like(field,vals[k]);
 							}
-							return j;
+//							return j;
 						});
 					}else {
 						queryWrapper.and(j -> j.like(field,vals[0]));

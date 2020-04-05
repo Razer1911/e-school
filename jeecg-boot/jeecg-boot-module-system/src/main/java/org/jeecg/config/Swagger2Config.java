@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
 
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.service.ApiKey;
@@ -33,7 +32,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Slf4j
 @Configuration
 @EnableSwagger2
-@EnableSwaggerBootstrapUI
+@EnableKnife4j
 public class Swagger2Config implements WebMvcConfigurer {
 
 	/**

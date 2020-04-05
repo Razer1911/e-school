@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import javax.annotation.Resource;
-
 import org.jeecg.common.constant.CacheConstant;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;

@@ -2,6 +2,7 @@ package org.jeecg.modules.quartz.service.impl;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.quartz.entity.QuartzJob;
@@ -32,11 +33,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob> implements IQuartzJobService {
-	@Autowired
-	private QuartzJobMapper quartzJobMapper;
-	@Autowired
-	private Scheduler scheduler;
+	private final QuartzJobMapper quartzJobMapper;
+	private final Scheduler scheduler;
 
 	@Override
 	public List<QuartzJob> findByJobClassName(String jobClassName) {
