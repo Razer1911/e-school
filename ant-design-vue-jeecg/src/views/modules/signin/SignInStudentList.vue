@@ -123,11 +123,6 @@
             dataIndex: 'studentName'
           },
           {
-            title:'请假表id',
-            align:"center",
-            dataIndex: 'signInId'
-          },
-          {
             title: '操作',
             dataIndex: 'action',
             align:"center",

@@ -20,7 +20,7 @@
           <a-input v-decorator="[ 'code', validatorRules.code]" placeholder="请输入签到单号"></a-input>
         </a-form-item>
         <a-form-item label="签到发起时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择签到发起时间" v-decorator="[ 'time', validatorRules.time]" :trigger-change="true" :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" style="width: 100%"/>
+          <j-date placeholder="请选择签到发起时间" v-decorator="[ 'time', validatorRules.time]" :trigger-change="true" style="width: 100%"/>
         </a-form-item>
 
       </a-form>

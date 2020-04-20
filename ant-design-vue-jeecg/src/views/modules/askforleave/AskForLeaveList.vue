@@ -145,6 +145,27 @@
             dataIndex: 'teacherName'
           },
           {
+            title:'请假原因',
+            align:"center",
+            dataIndex: 'reason'
+          },
+          {
+            title:'请假开始日期',
+            align:"center",
+            dataIndex: 'startTime',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          {
+            title:'请假结束日期',
+            align:"center",
+            dataIndex: 'endTime',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -161,7 +182,7 @@
           importExcelUrl: "askforleave/askForLeave/importExcel",
         },
         dictOptions:{},
-        tableScroll:{x :3*147+50}
+        tableScroll:{x :6*147+50}
       }
     },
     computed: {

@@ -17,9 +17,9 @@
           <template v-if="toggleSearchStatus">
             <a-col :xl="10" :lg="11" :md="12" :sm="24">
               <a-form-item label="签到发起时间">
-                <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" class="query-group-cust" v-model="queryParam.time_begin"></j-date>
+                <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.time_begin"></j-date>
                 <span class="query-group-split-cust"></span>
-                <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" class="query-group-cust" v-model="queryParam.time_end"></j-date>
+                <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.time_end"></j-date>
               </a-form-item>
             </a-col>
           </template>
@@ -146,7 +146,10 @@
           {
             title:'签到发起时间',
             align:"center",
-            dataIndex: 'time'
+            dataIndex: 'time',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title: '操作',

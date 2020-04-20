@@ -13,11 +13,17 @@
         <a-form-item label="请假单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'code', validatorRules.code]" placeholder="请输入请假单号"></a-input>
         </a-form-item>
-        <a-form-item label="审核状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-number v-decorator="[ 'status', validatorRules.status]" placeholder="请输入审核状态" style="width: 100%"/>
-        </a-form-item>
         <a-form-item label="审核教师" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'teacherName', validatorRules.teacherName]" placeholder="请输入审核教师"></a-input>
+        </a-form-item>
+        <a-form-item label="请假原因" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="[ 'reason', validatorRules.reason]" placeholder="请输入请假原因"></a-input>
+        </a-form-item>
+        <a-form-item label="请假开始日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <j-date placeholder="请选择请假开始日期" v-decorator="[ 'startTime', validatorRules.startTime]" :trigger-change="true" style="width: 100%"/>
+        </a-form-item>
+        <a-form-item label="请假结束日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <j-date placeholder="请选择请假结束日期" v-decorator="[ 'endTime', validatorRules.endTime]" :trigger-change="true" style="width: 100%"/>
         </a-form-item>
 
       </a-form>
@@ -30,10 +36,12 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
+  import JDate from '@/components/jeecg/JDate'  
 
   export default {
     name: "AskForLeaveModal",
     components: { 
+      JDate,
     },
     data () {
       return {
@@ -54,9 +62,13 @@
         validatorRules: {
           code: {rules: [
           ]},
-          status: {rules: [
-          ]},
           teacherName: {rules: [
+          ]},
+          reason: {rules: [
+          ]},
+          startTime: {rules: [
+          ]},
+          endTime: {rules: [
           ]},
         },
         url: {
@@ -76,7 +88,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'code','status','teacherName'))
+          this.form.setFieldsValue(pick(this.model,'code','status','teacherName','reason','startTime','endTime'))
         })
       },
       close () {
@@ -119,7 +131,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'code','status','teacherName'))
+        this.form.setFieldsValue(pick(row,'code','status','teacherName','reason','startTime','endTime'))
       },
 
       

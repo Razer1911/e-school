@@ -16,9 +16,6 @@
         <a-form-item label="学生名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'studentName', validatorRules.studentName]" placeholder="请输入学生名称"></a-input>
         </a-form-item>
-        <a-form-item label="请假表id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'signInId', validatorRules.signInId]" placeholder="请输入请假表id"></a-input>
-        </a-form-item>
 
       </a-form>
     </a-spin>
@@ -61,7 +58,6 @@
         validatorRules:{
         studentCode:{},
         studentName:{},
-        signInId:{},
         },
         url: {
           add: "/signin/signIn/addSignInStudent",
