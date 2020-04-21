@@ -47,6 +47,8 @@ public class SignIn implements Serializable {
     @Excel(name = "签到单号", width = 15)
     private String code;
 	/**签到发起时间*/
-    @Excel(name = "签到发起时间", width = 15)
-    private String time;
+    @Excel(name = "签到发起时间", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date time;
 }

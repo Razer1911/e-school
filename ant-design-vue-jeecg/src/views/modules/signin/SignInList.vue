@@ -38,7 +38,7 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-    
+
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
@@ -145,6 +145,14 @@
           },
           {
             title:'签到发起时间',
+            align:"center",
+            dataIndex: 'time',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          {
+            title:'所属部门',
             align:"center",
             dataIndex: 'time',
             customRender:function (text) {

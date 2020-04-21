@@ -13,9 +13,9 @@
         <a-form-item label="请假单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'code', validatorRules.code]" placeholder="请输入请假单号"></a-input>
         </a-form-item>
-        <a-form-item label="审核教师" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'teacherName', validatorRules.teacherName]" placeholder="请输入审核教师"></a-input>
-        </a-form-item>
+<!--        <a-form-item label="审核教师" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+<!--          <a-input v-decorator="[ 'teacherName', validatorRules.teacherName]" placeholder="请输入审核教师"></a-input>-->
+<!--        </a-form-item>-->
         <a-form-item label="请假原因" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'reason', validatorRules.reason]" placeholder="请输入请假原因"></a-input>
         </a-form-item>
@@ -36,11 +36,11 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
-  import JDate from '@/components/jeecg/JDate'  
+  import JDate from '@/components/jeecg/JDate'
 
   export default {
     name: "AskForLeaveModal",
-    components: { 
+    components: {
       JDate,
     },
     data () {
@@ -74,6 +74,7 @@
         url: {
           add: "/askforleave/askForLeave/add",
           edit: "/askforleave/askForLeave/edit",
+          Num: '/sys/fillRule/executeRuleByCode/ask_for_leave',
         }
       }
     },
@@ -83,10 +84,24 @@
       add () {
         this.edit({});
       },
+      getNum() {
+        httpAction(this.url.Num, this.model, 'put').then(res => {
+          // 执行成功，获取返回的值，并赋到页面上
+          if (res.success) {
+            this.model.code = res.result
+            this.$nextTick(() => {
+              this.form.setFieldsValue({ code: this.model.code})
+            })
+          }
+        })
+      },
       edit (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        if (!this.model.id) {
+          this.getNum()
+        }
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'code','status','teacherName','reason','startTime','endTime'))
         })
@@ -124,7 +139,7 @@
               that.close();
             })
           }
-         
+
         })
       },
       handleCancel () {
@@ -134,7 +149,7 @@
         this.form.setFieldsValue(pick(row,'code','status','teacherName','reason','startTime','endTime'))
       },
 
-      
+
     }
   }
 </script>

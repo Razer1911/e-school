@@ -75,4 +75,20 @@ public class AskForLeave implements Serializable {
 	@Excel(name = "审核教师", width = 15)
     @ApiModelProperty(value = "审核教师")
     private String teacherName;
+	/**请假原因*/
+	@Excel(name = "请假原因", width = 15)
+    @ApiModelProperty(value = "请假原因")
+    private String reason;
+	/**请假开始日期*/
+	@Excel(name = "请假开始日期", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @ApiModelProperty(value = "请假开始日期")
+    private Date startTime;
+	/**请假结束日期*/
+	@Excel(name = "请假结束日期", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @ApiModelProperty(value = "请假结束日期")
+    private Date endTime;
 }
