@@ -24,14 +24,15 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-    
+
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+<!--      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
       <a-button type="primary" icon="download" @click="handleExportXls('请假发起表')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <a-button v-if="selectedRowKeys.length > 0" @click="pass" type="primary" icon="check">审批通过</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -79,7 +80,22 @@
             下载
           </a-button>
         </template>
+        <template
+          slot="testStatus"
+          slot-scope="text, record"
+        >
+					<span
+            v-if="record.status === 0"
+            class="testStatusButton"
+            style="background-color: #f0ad4e;color: #fff"
+          >未通过</span>
+          <span
+            v-if="record.status === 1"
+            class="testStatusButton"
+            style="background-color: #58b058;color: #fff"
+          >已通过</span>
 
+        </template>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
@@ -107,7 +123,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import AskForLeaveModal from './modules/AskForLeaveModal'
-
+  import { getAction } from '@/api/manage'
   export default {
     name: "AskForLeaveList",
     mixins:[JeecgListMixin],
@@ -137,12 +153,13 @@
           {
             title:'审核状态',
             align:"center",
+            scopedSlots: { customRender: 'testStatus' },
             dataIndex: 'status'
           },
           {
-            title:'审核教师',
+            title:'申请学生姓名',
             align:"center",
-            dataIndex: 'teacherName'
+            dataIndex: 'studentName'
           },
           {
             title:'请假原因',
@@ -175,11 +192,12 @@
           }
         ],
         url: {
-          list: "/askforleave/askForLeave/list",
+          list: "/askforleave/askForLeave/list1",
           delete: "/askforleave/askForLeave/delete",
           deleteBatch: "/askforleave/askForLeave/deleteBatch",
           exportXlsUrl: "/askforleave/askForLeave/exportXls",
           importExcelUrl: "askforleave/askForLeave/importExcel",
+          pass: "/askforleave/askForLeave/pass"
         },
         dictOptions:{},
         tableScroll:{x :6*147+50}
@@ -192,10 +210,52 @@
     },
     methods: {
       initDictConfig(){
-      }
+      },
+      pass: function () {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          var ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
+          }
+          var that = this;
+          this.$confirm({
+            title: "确认审批通过",
+            content: "是否审批通过以下请假请求?",
+            onOk: function () {
+              getAction(that.url.pass, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              })
+
+            }
+            }
+          );
+        }
+      },
+
     }
   }
 </script>
 <style scoped>
   @import '~@assets/less/common.less';
+
+  .testStatusButton {
+    padding: 0.4em 0.4em;
+    line-height: 0.72;
+    text-align: center;
+    border-radius: 4px;
+    text-shadow: none;
+    font-weight: normal;
+    display: inline-block;
+    overflow: hidden;
+    height: 20px;
+  }
 </style>

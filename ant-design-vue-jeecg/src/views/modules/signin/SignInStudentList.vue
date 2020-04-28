@@ -50,8 +50,39 @@
           </a-button>
         </template>
 
+        <template
+          slot="testStatus"
+          slot-scope="text, record"
+        >
+					<span
+            v-if="record.status === 0"
+            class="testStatusButton"
+            style="background-color: #f0ad4e;color: #fff"
+          >未出勤</span>
+          <span
+            v-if="record.status === 2"
+            class="testStatusButton"
+            style="background-color: rgba(255,0,0,0.57);color: #fff"
+          >已请假</span>
+          <span
+            v-if="record.status === 3"
+            class="testStatusButton"
+            style="background-color: rgba(255,0,0,0.57);color: #fff"
+          >已迟到</span>
+          <span
+            v-if="record.status === 1"
+            class="testStatusButton"
+            style="background-color: #58b058;color: #fff"
+          >已出勤</span>
+
+
+        </template>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleSignIn(record.id)">出勤</a>
+          <a-divider type="vertical" />
+          <a @click="handleNotSignIn(record.id)">未出勤</a>
+          <a-divider type="vertical" />
+          <a @click="handleLate(record.id)">迟到</a>
           <a-divider type="vertical" />
           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
             <a>删除</a>
@@ -69,7 +100,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import SignInStudentModal from './modules/SignInStudentModal'
-
+  import { getAction } from '@/api/manage'
 
 
   export default {
@@ -123,6 +154,12 @@
             dataIndex: 'studentName'
           },
           {
+            title:'出勤状态',
+            align:"center",
+            scopedSlots: { customRender: 'testStatus' },
+            dataIndex: 'status'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -132,9 +169,13 @@
         url: {
           list: "/signin/signIn/listSignInStudentByMainId",
           delete: "/signin/signIn/deleteSignInStudent",
-          deleteBatch: "/signin/signIn/deleteBatchSignInStudent"
+          deleteBatch: "/signin/signIn/deleteBatchSignInStudent",
+          signIn: "/signin/signIn/studentSignIn",
+          notSignIn: "/signin/signIn/studentNotSignIn",
+          late: "/signin/signIn/studentLate"
         },
         dictOptions:{
+         orgCode:[],
         },
 
       }
@@ -145,10 +186,54 @@
         this.selectedRowKeys=[]
         this.ipagination.current = 1
       },
-
+      handleSignIn: function (id) {
+        var that = this;
+        getAction(that.url.signIn, {id: id}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
+      handleNotSignIn: function (id) {
+        var that = this;
+        getAction(that.url.notSignIn, {id: id}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
+      handleLate: function (id) {
+        var that = this;
+        getAction(that.url.late, {id: id}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
     }
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
+
+  .testStatusButton {
+    padding: 0.4em 0.4em;
+    line-height: 0.72;
+    text-align: center;
+    border-radius: 4px;
+    text-shadow: none;
+    font-weight: normal;
+    display: inline-block;
+    overflow: hidden;
+    height: 20px;
+  }
 </style>

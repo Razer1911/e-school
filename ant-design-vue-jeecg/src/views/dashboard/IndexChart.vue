@@ -1,103 +1,103 @@
 <template>
   <div class="page-header-index-wide">
     <a-row :gutter="24">
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="总销售额" total="￥126,560">
+<!--      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">-->
+<!--        <chart-card :loading="loading" title="总销售额" total="￥126,560">-->
+<!--          <a-tooltip title="指标说明" slot="action">-->
+<!--            <a-icon type="info-circle-o" />-->
+<!--          </a-tooltip>-->
+<!--          <div>-->
+<!--            <trend flag="up" style="margin-right: 16px;">-->
+<!--              <span slot="term">周同比</span>-->
+<!--              12%-->
+<!--            </trend>-->
+<!--            <trend flag="down">-->
+<!--              <span slot="term">日同比</span>-->
+<!--              11%-->
+<!--            </trend>-->
+<!--          </div>-->
+<!--          <template slot="footer">日均销售额<span>￥ 234.56</span></template>-->
+<!--        </chart-card>-->
+<!--      </a-col>-->
+      <a-col v-if="summary.unprocessed != 0"  :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
+        <chart-card :loading="loading" title="待处理假条数量" :total="summary.unprocessed">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
-          <div>
-            <trend flag="up" style="margin-right: 16px;">
-              <span slot="term">周同比</span>
-              12%
-            </trend>
-            <trend flag="down">
-              <span slot="term">日同比</span>
-              11%
-            </trend>
-          </div>
-          <template slot="footer">日均销售额<span>￥ 234.56</span></template>
+        </chart-card>
+      </a-col>
+<!--      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">-->
+<!--        <chart-card :loading="loading" title="支付笔数" :total="6560 | NumberFormat">-->
+<!--          <a-tooltip title="指标说明" slot="action">-->
+<!--            <a-icon type="info-circle-o" />-->
+<!--          </a-tooltip>-->
+<!--          <div>-->
+<!--            <mini-bar :height="40" />-->
+<!--          </div>-->
+<!--          <template slot="footer">转化率 <span>60%</span></template>-->
+<!--        </chart-card>-->
+<!--      </a-col>-->
+      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
+        <chart-card :loading="loading" title="请假次数" :total="summary.askForLeave | NumberFormat">
+          <a-tooltip title="学生:个人总请假次数 教师:全体学生总请假次数" slot="action">
+            <a-icon type="info-circle-o" />
+          </a-tooltip>
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="订单量" :total="8846 | NumberFormat">
+        <chart-card :loading="loading" title="迟到次数" :total="summary.late | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
-          <div>
-            <mini-area />
-          </div>
-          <template slot="footer">日订单量<span> {{ '1234' | NumberFormat }}</span></template>
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="支付笔数" :total="6560 | NumberFormat">
+        <chart-card :loading="loading" title="出勤率" :total="summary1.attendance">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <mini-bar :height="40" />
+            <mini-progress color="rgb(19, 194, 194)" :target="summary.attendance" :percentage="summary.attendance" :height="8" />
           </div>
-          <template slot="footer">转化率 <span>60%</span></template>
-        </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="运营活动效果" total="78%">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" :height="8" />
-          </div>
-          <template slot="footer">
-            <trend flag="down" style="margin-right: 16px;">
-              <span slot="term">同周比</span>
-              12%
-            </trend>
-            <trend flag="up">
-              <span slot="term">日环比</span>
-              80%
-            </trend>
-          </template>
         </chart-card>
       </a-col>
     </a-row>
 
-    <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">
-      <div class="salesCard">
-        <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">
-          <div class="extra-wrapper" slot="tabBarExtraContent">
-            <div class="extra-item">
-              <a>今日</a>
-              <a>本周</a>
-              <a>本月</a>
-              <a>本年</a>
-            </div>
-            <a-range-picker :style="{width: '256px'}" />
-          </div>
-          <a-tab-pane loading="true" tab="销售额" key="1">
-            <a-row>
-              <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar title="销售额排行" :dataSource="barData"/>
-              </a-col>
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" :list="rankList"/>
-              </a-col>
-            </a-row>
-          </a-tab-pane>
-          <a-tab-pane tab="销售趋势" key="2">
-            <a-row>
-              <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar title="销售额趋势" :dataSource="barData"/>
-              </a-col>
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" :list="rankList"/>
-              </a-col>
-            </a-row>
-          </a-tab-pane>
-        </a-tabs>
-      </div>
-    </a-card>
+<!--    <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">-->
+<!--      <div class="salesCard">-->
+<!--        <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">-->
+<!--          <div class="extra-wrapper" slot="tabBarExtraContent">-->
+<!--            <div class="extra-item">-->
+<!--              <a>今日</a>-->
+<!--              <a>本周</a>-->
+<!--              <a>本月</a>-->
+<!--              <a>本年</a>-->
+<!--            </div>-->
+<!--            <a-range-picker :style="{width: '256px'}" />-->
+<!--          </div>-->
+<!--          <a-tab-pane loading="true" tab="销售额" key="1">-->
+<!--            <a-row>-->
+<!--              <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">-->
+<!--                <bar title="销售额排行" :dataSource="barData"/>-->
+<!--              </a-col>-->
+<!--              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">-->
+<!--                <rank-list title="门店销售排行榜" :list="rankList"/>-->
+<!--              </a-col>-->
+<!--            </a-row>-->
+<!--          </a-tab-pane>-->
+<!--          <a-tab-pane tab="销售趋势" key="2">-->
+<!--            <a-row>-->
+<!--              <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">-->
+<!--                <bar title="销售额趋势" :dataSource="barData"/>-->
+<!--              </a-col>-->
+<!--              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">-->
+<!--                <rank-list title="门店销售排行榜" :list="rankList"/>-->
+<!--              </a-col>-->
+<!--            </a-row>-->
+<!--          </a-tab-pane>-->
+<!--        </a-tabs>-->
+<!--      </div>-->
+<!--    </a-card>-->
 
     <a-row>
       <a-col :span="24">
@@ -146,7 +146,7 @@
   import Bar from '@/components/chart/Bar'
   import LineChartMultid from '@/components/chart/LineChartMultid'
   import HeadInfo from '@/components/tools/HeadInfo.vue'
-
+  import { getAction } from '@/api/manage'
   import Trend from '@/components/Trend'
   import { getLoginfo,getVisitInfo } from '@/api/api'
 
@@ -188,7 +188,22 @@
         loginfo:{},
         visitFields:['ip','visit'],
         visitInfo:[],
-        indicator: <a-icon type="loading" style="font-size: 24px" spin />
+        url: {
+          attendance: "/askforleave/askForLeave/getAttendance"
+        },
+        summary: {
+          askForLeave: '',
+          late: '',
+          attendance: '',
+          unprocessed: ''
+        },
+        summary1: {
+          askForLeave: '',
+          late: '',
+          attendance: '',
+          unprocessed: ''
+        },
+        indicator: <a-icon type="loading" style="font-size: 24px" spin />,
       }
     },
     created() {
@@ -196,6 +211,8 @@
         this.loading = !this.loading
       }, 1000)
       this.initLogInfo();
+      this.initAttendance();
+      this.initAttendance1();
     },
     methods: {
       initLogInfo () {
@@ -213,6 +230,33 @@
              this.visitInfo = res.result;
            }
          })
+      },
+      initAttendance () {
+        var that = this;
+        getAction(that.url.attendance).then((res) => {
+          if (res.success) {
+            Object.keys(res.result).forEach(key=>{
+              res.result[key] =res.result[key]
+            })
+            console.log("bbbbbbb",res.result)
+            that.summary = res.result;
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
+      initAttendance1 () {
+        var that = this;
+        getAction(that.url.attendance).then((res) => {
+          if (res.success) {
+            Object.keys(res.result).forEach(key=>{
+              res.result[key] =res.result[key]+"%"
+            })
+            that.summary1 = res.result;
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
       },
     }
   }

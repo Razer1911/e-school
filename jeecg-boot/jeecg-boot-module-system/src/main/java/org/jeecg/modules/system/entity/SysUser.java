@@ -157,7 +157,10 @@ public class SysUser implements Serializable {
      * 同步工作流引擎1同步0不同步
      */
     private String activitiSync;
-
+    /**
+     * 同步工作流引擎1同步0不同步
+     */
+    private String faceId;
     /**
      * 身份（0 普通成员 1 上级）
      */

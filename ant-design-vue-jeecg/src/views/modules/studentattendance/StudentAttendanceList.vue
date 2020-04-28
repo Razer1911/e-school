@@ -5,15 +5,8 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="签到单号">
-              <a-input placeholder="请输入签到单号" v-model="queryParam.code"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :xl="10" :lg="11" :md="12" :sm="24">
-            <a-form-item label="签到发起时间">
-              <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.time_begin"></j-date>
-              <span class="query-group-split-cust"></span>
-              <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.time_end"></j-date>
+            <a-form-item label="学生姓名">
+              <a-input placeholder="请输入学生姓名" v-model="queryParam.studentName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -31,14 +24,20 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-
+    
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('签到表')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('学生出勤统计')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <a-dropdown v-if="selectedRowKeys.length > 0">
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+        </a-menu>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+      </a-dropdown>
     </div>
 
     <!-- table区域-begin -->
@@ -57,8 +56,8 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange, type:'radio'}"
-        :customRow="clickThenSelect"
+        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :scroll="tableScroll"
         @change="handleTableChange">
 
         <template slot="htmlSlot" slot-scope="text">
@@ -100,86 +99,74 @@
       </a-table>
     </div>
 
-    <a-tabs defaultActiveKey="1">
-      <a-tab-pane tab="学生附表" key="1" >
-        <sign-in-student-list :mainId="selectedMainId" />
-      </a-tab-pane>
-    </a-tabs>
-
-    <signIn-modal ref="modalForm" @ok="modalFormOk"></signIn-modal>
+    <studentAttendance-modal ref="modalForm" @ok="modalFormOk"></studentAttendance-modal>
   </a-card>
 </template>
 
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import SignInModal from './modules/SignInModal'
-  import { getAction } from '@/api/manage'
-  import SignInStudentList from './SignInStudentList'
-  import JDate from '@/components/jeecg/JDate.vue'
+  import StudentAttendanceModal from './modules/StudentAttendanceModal'
 
   export default {
-    name: "SignInList",
+    name: "StudentAttendanceList",
     mixins:[JeecgListMixin],
     components: {
-      JDate,
-      SignInStudentList,
-      SignInModal
+      StudentAttendanceModal
     },
     data () {
       return {
-        description: '签到表管理页面',
+        description: '学生出勤统计管理页面',
         // 表头
         columns: [
           {
-            title:'签到单号',
+            title: '#',
+            dataIndex: '',
+            key:'rowIndex',
+            width:60,
             align:"center",
-            dataIndex: 'code'
-          },
-          {
-            title:'签到发起时间',
-            align:"center",
-            dataIndex: 'time',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
             }
           },
           {
-            title:'签到班级名称',
+            title:'学生姓名',
             align:"center",
-            dataIndex: 'orgName',
+            dataIndex: 'studentName'
+          },
+          {
+            title:'请假次数',
+            align:"center",
+            dataIndex: 'askforleave'
+          },
+          {
+            title:'迟到次数',
+            align:"center",
+            dataIndex: 'late'
+          },
+          {
+            title:'出勤率',
+            align:"center",
+            dataIndex: 'attendance'
           },
           {
             title: '操作',
             dataIndex: 'action',
             align:"center",
-            scopedSlots: { customRender: 'action' },
+            fixed:"right",
+            width:147,
+            scopedSlots: { customRender: 'action' }
           }
         ],
         url: {
-          list: "/signin/signIn/list",
-          delete: "/signin/signIn/delete",
-          deleteBatch: "/signin/signIn/deleteBatch",
-          exportXlsUrl: "/signin/signIn/exportXls",
-          importExcelUrl: "signin/signIn/importExcel",
+          list: "/studentattendance/studentAttendance/list",
+          delete: "/studentattendance/studentAttendance/delete",
+          deleteBatch: "/studentattendance/studentAttendance/deleteBatch",
+          exportXlsUrl: "/studentattendance/studentAttendance/exportXls",
+          importExcelUrl: "studentattendance/studentAttendance/importExcel",
         },
-        dictOptions:{
-         orgCode:[],
-        },
-        /* 分页参数 */
-        ipagination:{
-          current: 1,
-          pageSize: 5,
-          pageSizeOptions: ['5', '10', '50'],
-          showTotal: (total, range) => {
-            return range[0] + "-" + range[1] + " 共" + total + "条"
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: 0
-        },
-        selectedMainId:''
-
+        dictOptions:{},
+        tableScroll:{x :4*147+50}
       }
     },
     computed: {
@@ -188,52 +175,11 @@
       }
     },
     methods: {
-      clickThenSelect(record) {
-        return {
-          on: {
-            click: () => {
-              this.onSelectChange(record.id.split(","), [record]);
-            }
-          }
-        }
-      },
-      onClearSelected() {
-        this.selectedRowKeys = [];
-        this.selectionRows = [];
-        this.selectedMainId=''
-      },
-      onSelectChange(selectedRowKeys, selectionRows) {
-        this.selectedMainId=selectedRowKeys[0]
-        this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
-      },
-      loadData(arg) {
-        if(!this.url.list){
-          this.$message.error("请设置url.list属性!")
-          return
-        }
-        //加载数据 若传入参数1则加载第一页的内容
-        if (arg === 1) {
-          this.ipagination.current = 1;
-        }
-        this.onClearSelected()
-        var params = this.getQueryParams();//查询条件
-        this.loading = true;
-        getAction(this.url.list, params).then((res) => {
-          if (res.success) {
-            this.dataSource = res.result.records;
-            this.ipagination.total = res.result.total;
-          }
-          if(res.code===510){
-            this.$message.warning(res.message)
-          }
-          this.loading = false;
-        })
+      initDictConfig(){
       }
-
     }
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
 </style>

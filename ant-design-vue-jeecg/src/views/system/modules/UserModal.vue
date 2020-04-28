@@ -130,6 +130,10 @@
           <j-dict-select-tag  v-decorator="['activitiSync', {}]" placeholder="请选择是否同步工作流引擎" :type="'radio'" :triggerChange="true" dictCode="activiti_sync"/>
         </a-form-item>
 
+        <a-form-item label="人脸ID" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input placeholder="请输入人脸库人脸ID" v-decorator="[ 'faceId', {}]" />
+        </a-form-item>
+
       </a-form>
     </a-spin>
     <depart-window ref="departWindow" @ok="modalFormOk"></depart-window>
@@ -226,6 +230,7 @@
             ]
           }
         },
+        faceId:{},
         departIdShow:false,
         departIds:[], //负责部门id
         title:"操作",
@@ -329,7 +334,7 @@
         that.visible = true;
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post'))
+          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post','faceId'))
         });
         //身份为上级显示负责部门，否则不显示
         if(this.model.identity=="2"){

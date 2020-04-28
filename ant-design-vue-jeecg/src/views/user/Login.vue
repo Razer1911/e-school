@@ -95,7 +95,7 @@
                 </div>
                 <a-button @click="getCompetence()">打开摄像头</a-button>
                 <a-button @click="stopNavigator()">关闭摄像头</a-button>
-                　　　　　<a-button @click="setImage()">拍照</a-button>
+                　　　　　<a-button @click.stop.prevent="setImage()">拍照</a-button>
 
 
 
@@ -238,7 +238,9 @@
         verifiedCode:"",
         inputCodeContent:"",
         inputCodeNull:true,
-
+        url: {
+          faceLogin: "/sys/faceLogin",
+        },
         departList:[],
         departVisible:false,
         departSelected:"",
@@ -259,7 +261,7 @@
       // update-end- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
     },
     methods: {
-      ...mapActions([ "Login", "Logout","PhoneLogin" ]),
+      ...mapActions([ "Login", "Logout","PhoneLogin","faceLogin" ]),
       getCompetence () {
         var _this = this
         this.thisCancas = document.getElementById('canvasCamera')
@@ -312,6 +314,26 @@
         // 获取图片base64链接
         var image = this.thisCancas.toDataURL('image/png')
         _this.imgSrc = image
+        let map = {
+          base64: image
+        };
+        let loginParams = {};
+        loginParams.username = "admin"
+        // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
+        //loginParams.password = md5(values.password)
+        //loginParams.password = encryption(values.password,that.encryptedString.key,that.encryptedString.iv)
+        loginParams.password = "123456"
+        loginParams.remember_me = true
+        // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
+        loginParams.captcha = "1"
+        loginParams.checkKey = _this.currdatetime
+        console.log("登录参数",loginParams)
+        _this.Login(loginParams).then((res) => {
+          this.stopNavigator()
+          this.departConfirm(res)
+        }).catch((err) => {
+          _this.requestFailed(err);
+        });
         this.$emit('refreshDataList', this.imgSrc)
       },
 // base64转文件

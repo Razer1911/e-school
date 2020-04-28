@@ -75,6 +75,14 @@ public class AskForLeave implements Serializable {
 	@Excel(name = "审核教师", width = 15)
     @ApiModelProperty(value = "审核教师")
     private String teacherName;
+    /**审核教师*/
+    @Excel(name = "申请学生姓名", width = 15)
+    @ApiModelProperty(value = "申请学生姓名")
+    private String studentName;
+    /**审核教师*/
+    @Excel(name = "申请学生账号", width = 15)
+    @ApiModelProperty(value = "申请学生账号")
+    private String studentCode;
 	/**请假原因*/
 	@Excel(name = "请假原因", width = 15)
     @ApiModelProperty(value = "请假原因")

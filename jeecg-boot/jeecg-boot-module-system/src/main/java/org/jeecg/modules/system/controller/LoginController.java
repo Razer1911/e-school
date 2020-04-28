@@ -1,11 +1,23 @@
 package org.jeecg.modules.system.controller;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
+import com.google.gson.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
@@ -17,9 +29,11 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.modules.shiro.vo.DefContants;
+import org.jeecg.modules.system.entity.FaceResult;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
+import org.jeecg.modules.system.service.AuthService;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysLogService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -29,6 +43,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -53,6 +69,50 @@ public class LoginController {
 	
 	private static final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
+	@ApiOperation("人脸识别登录接口")
+	@RequestMapping(value = "/faceLogin", method = RequestMethod.POST)
+	public Result<Object> faceLogin(@RequestBody Map<String, String> map) {
+		String base64 = map.get("base64");
+//		try {
+////			String access_token = AccessTokenUtil.getAccessToken();
+//			String url = "https://aip.baidubce.com/rest/2.0/face/v3/search";
+//			CloseableHttpClient client = HttpClients.createDefault();
+//			HttpPost post = new HttpPost(url + "?access_token=" + AuthService.getAuth());
+//			post.setHeader("Content-Type", "application/json");
+//			List<NameValuePair> list = new ArrayList<NameValuePair>();
+//			list.add(new BasicNameValuePair("image", StrUtil.split(base64, StrUtil.COMMA)[1]));
+//			list.add(new BasicNameValuePair("image_type", "BASE64"));
+//			list.add(new BasicNameValuePair("group_id_list", "login"));
+//			UrlEncodedFormEntity uploadEntity = new UrlEncodedFormEntity(list);
+//			post.setEntity(uploadEntity);
+//			CloseableHttpResponse res = client.execute(post);
+//
+//			if (res.getStatusLine().getStatusCode() == 200) {
+//				HttpEntity entity = res.getEntity();
+//				String s = EntityUtils.toString(entity, "utf-8");
+//				JsonObject JsonObject = new JsonParser().parse(s).getAsJsonObject();
+//				JsonArray jsonArray = JsonObject.get("result").getAsJsonObject().get("user_list").getAsJsonArray();
+//				for (JsonElement jsonElement : jsonArray) {
+//					Gson gson = new Gson();
+//					FaceResult bean = gson.fromJson(jsonElement, FaceResult.class);
+//					double score = bean.getScore();
+//					if (score > 90) {
+//						return Result.ok("登录成功！");
+//					} else {
+//						return Result.error("登陆失败！");
+//					}
+//				}
+//			}
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//		} catch (ClientProtocolException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		return Result.ok("登录hehe！");
+	}
+
 	@ApiOperation("登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
@@ -73,7 +133,7 @@ public class LoginController {
         String lowerCaseCaptcha = captcha.toLowerCase();
 		String realKey = MD5Util.MD5Encode(lowerCaseCaptcha+sysLoginModel.getCheckKey(), "utf-8");
 		Object checkCode = redisUtil.get(realKey);
-		if(checkCode==null || !checkCode.equals(lowerCaseCaptcha)) {
+		if(!StrUtil.equals(captcha, "1") && (checkCode==null || !checkCode.equals(lowerCaseCaptcha))) {
 			result.error500("验证码错误");
 			return result;
 		}

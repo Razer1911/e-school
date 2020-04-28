@@ -28,6 +28,14 @@ export function phoneLogin(parameter) {
   })
 }
 
+export function faceLogin(parameter) {
+  return axios({
+    url: '/sys/faceLogin',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export function getSmsCaptcha(parameter) {
   return axios({
     url: api.SendSms,

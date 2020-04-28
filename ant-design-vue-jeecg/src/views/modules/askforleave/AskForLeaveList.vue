@@ -24,7 +24,7 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-    
+
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
@@ -80,6 +80,22 @@
           </a-button>
         </template>
 
+        <template
+          slot="testStatus"
+          slot-scope="text, record"
+        >
+					<span
+            v-if="record.status === 0"
+            class="testStatusButton"
+            style="background-color: #f0ad4e;color: #fff"
+          >未通过</span>
+          <span
+            v-if="record.status === 1"
+            class="testStatusButton"
+            style="background-color: #58b058;color: #fff"
+          >已通过</span>
+
+        </template>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
@@ -137,6 +153,7 @@
           {
             title:'审核状态',
             align:"center",
+            scopedSlots: { customRender: 'testStatus' },
             dataIndex: 'status'
           },
           {
@@ -198,4 +215,16 @@
 </script>
 <style scoped>
   @import '~@assets/less/common.less';
+
+  .testStatusButton {
+    padding: 0.4em 0.4em;
+    line-height: 0.72;
+    text-align: center;
+    border-radius: 4px;
+    text-shadow: none;
+    font-weight: normal;
+    display: inline-block;
+    overflow: hidden;
+    height: 20px;
+  }
 </style>

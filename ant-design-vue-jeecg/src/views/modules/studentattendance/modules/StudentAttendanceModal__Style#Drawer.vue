@@ -1,42 +1,44 @@
 <template>
-  <a-modal
+  <a-drawer
     :title="title"
     :width="width"
-    :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
-    @cancel="handleCancel"
-    cancelText="关闭">
+    placement="right"
+    :closable="false"
+    @close="close"
+    :visible="visible">
+  
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
-        <a-form-item label="签到单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'code', validatorRules.code]" placeholder="请输入签到单号"></a-input>
+        <a-form-item label="学生姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="[ 'studentName', validatorRules.studentName]" placeholder="请输入学生姓名"></a-input>
         </a-form-item>
-        <a-form-item label="签到发起时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择签到发起时间" v-decorator="[ 'time', validatorRules.time]" :trigger-change="true" style="width: 100%"/>
+        <a-form-item label="请假次数" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input-number v-decorator="[ 'askforleave', validatorRules.askforleave]" placeholder="请输入请假次数" style="width: 100%"/>
         </a-form-item>
-        <a-form-item label="签到班级" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-select-depart v-decorator="['orgCode']" :trigger-change="true"/>
+        <a-form-item label="迟到次数" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input-number v-decorator="[ 'late', validatorRules.late]" placeholder="请输入迟到次数" style="width: 100%"/>
         </a-form-item>
-
+        <a-form-item label="出勤率" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input-number v-decorator="[ 'attendance', validatorRules.attendance]" placeholder="请输入出勤率" style="width: 100%"/>
+        </a-form-item>
+        
       </a-form>
     </a-spin>
-  </a-modal>
+    <a-button type="primary" @click="handleOk">确定</a-button>
+    <a-button type="primary" @click="handleCancel">取消</a-button>
+  </a-drawer>
 </template>
 
 <script>
 
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
-  import JDate from '@/components/jeecg/JDate'
-  import JSelectDepart from '@/components/jeecgbiz/JSelectDepart'
-
+  import { validateDuplicateValue } from '@/utils/util'
+  
   export default {
-    name: "SignInModal",
-    components: {
-      JDate,
-      JSelectDepart,
+    name: "StudentAttendanceModal",
+    components: { 
     },
     data () {
       return {
@@ -53,19 +55,21 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
         confirmLoading: false,
-        validatorRules:{
-        code:{rules: [{ required: true, message: '请输入签到单号!' }]},
-        time:{rules: [{ required: true, message: '请输入签到发起时间!' }]},
-        orgCode:{rules: [{ required: true, message: '请输入签到班级!' }]},
+        validatorRules: {
+          studentName: {rules: [
+          ]},
+          askforleave: {rules: [
+          ]},
+          late: {rules: [
+          ]},
+          attendance: {rules: [
+          ]},
         },
         url: {
-          add: "/signin/signIn/add",
-          edit: "/signin/signIn/edit",
-          Num: '/sys/fillRule/executeRuleByCode/sign_in',
+          add: "/studentattendance/studentAttendance/add",
+          edit: "/studentattendance/studentAttendance/edit",
         }
-
       }
     },
     created () {
@@ -74,26 +78,12 @@
       add () {
         this.edit({});
       },
-      getNum() {
-        httpAction(this.url.Num, this.model, 'put').then(res => {
-          // 执行成功，获取返回的值，并赋到页面上
-          if (res.success) {
-            this.model.code = res.result
-            this.$nextTick(() => {
-              this.form.setFieldsValue({ code: this.model.code})
-            })
-          }
-        })
-      },
       edit (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        if (!this.model.id) {
-          this.getNum()
-        }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'code','time','orgCode'))
+          this.form.setFieldsValue(pick(this.model,'studentName','askforleave','late','attendance'))
         })
       },
       close () {
@@ -129,17 +119,25 @@
               that.close();
             })
           }
-
+         
         })
       },
       handleCancel () {
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'code','time','orgCode'))
-      },
-
-
+        this.form.setFieldsValue(pick(row,'studentName','askforleave','late','attendance'))
+      }
+      
     }
   }
 </script>
+
+<style lang="less" scoped>
+/** Button按钮间距 */
+  .ant-btn {
+    margin-left: 30px;
+    margin-bottom: 30px;
+    float: right;
+  }
+</style>
