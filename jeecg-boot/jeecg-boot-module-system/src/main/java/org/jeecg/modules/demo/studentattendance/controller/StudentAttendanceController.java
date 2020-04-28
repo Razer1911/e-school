@@ -9,9 +9,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.ObjectUtil;
+import lombok.RequiredArgsConstructor;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.demo.signin.entity.SignInStudent;
+import org.jeecg.modules.demo.signin.service.ISignInStudentService;
 import org.jeecg.modules.demo.studentattendance.entity.StudentAttendance;
 import org.jeecg.modules.demo.studentattendance.service.IStudentAttendanceService;
 
@@ -20,6 +28,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.entity.SysUserDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.ISysUserDepartService;
+import org.jeecg.util.SysInfoUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -46,10 +59,16 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 @RestController
 @RequestMapping("/studentattendance/studentAttendance")
 @Slf4j
+@RequiredArgsConstructor
 public class StudentAttendanceController extends JeecgController<StudentAttendance, IStudentAttendanceService> {
-	@Autowired
-	private IStudentAttendanceService studentAttendanceService;
-	
+
+	private final IStudentAttendanceService studentAttendanceService;
+
+	private final SysInfoUtils sysInfoUtil;
+
+	private final ISysUserDepartService sysUserDepartService;
+
+	private final ISignInStudentService signInStudentService;
 	/**
 	 * 分页列表查询
 	 *
@@ -66,6 +85,40 @@ public class StudentAttendanceController extends JeecgController<StudentAttendan
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		QueryWrapper<SysUserDepart> sysUserDepartQueryWrapper = new QueryWrapper<>();
+        sysUserDepartQueryWrapper.eq("user_id", sysUser.getId()).last("limit 1");
+        SysUserDepart sysUserDepart = sysUserDepartService.getOne(sysUserDepartQueryWrapper);
+		studentAttendanceService.remove(null);
+		List<SysUser> students = sysInfoUtil.getStudentsByCurrentTeacher(sysUserDepart.getDepId());
+		if (ObjectUtil.isNotEmpty(students)) {
+			for (SysUser student : students) {
+				int askForLeave = 0;
+				int late = 0;
+				Double attendance = 0D;
+				StudentAttendance studentAttendance1 = new StudentAttendance();
+				QueryWrapper<SignInStudent> signInStudentQueryWrapper = new QueryWrapper<>();
+				signInStudentQueryWrapper.eq("status", 1).eq("student_code", student.getUsername());
+				QueryWrapper<SignInStudent> signInStudentQueryWrapper3 = new QueryWrapper<>();
+				signInStudentQueryWrapper3.eq("student_code", student.getUsername());
+				if (signInStudentService.list(signInStudentQueryWrapper3).size() != 0) {
+					attendance = NumberUtil.div(signInStudentService.list(signInStudentQueryWrapper).size()
+							, signInStudentService.list(signInStudentQueryWrapper3).size(), 2)*100;
+				}
+				QueryWrapper<SignInStudent> signInStudentQueryWrapper1 = new QueryWrapper<>();
+				signInStudentQueryWrapper1.eq("status", 3).eq("student_code", student.getUsername());
+				late = signInStudentService.list(signInStudentQueryWrapper1).size();
+				QueryWrapper<SignInStudent> signInStudentQueryWrapper2 = new QueryWrapper<>();
+				signInStudentQueryWrapper2.eq("status", 2).eq("student_code", student.getUsername());
+				askForLeave = signInStudentService.list(signInStudentQueryWrapper2).size();
+				studentAttendance1.setStudentCode(student.getUsername());
+				studentAttendance1.setStudentName(student.getRealname());
+				studentAttendance1.setAskforleave(askForLeave);
+				studentAttendance1.setLate(late);
+				studentAttendance1.setAttendance(attendance);
+				studentAttendanceService.save(studentAttendance1);
+			}
+		}
 		QueryWrapper<StudentAttendance> queryWrapper = QueryGenerator.initQueryWrapper(studentAttendance, req.getParameterMap());
 		Page<StudentAttendance> page = new Page<StudentAttendance>(pageNo, pageSize);
 		IPage<StudentAttendance> pageList = studentAttendanceService.page(page, queryWrapper);
