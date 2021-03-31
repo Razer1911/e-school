@@ -82,7 +82,7 @@
 		<!--        <liquibase-hibernate5.version>3.8</liquibase-hibernate5.version>-->
 		<pinyin4j.version>2.5.1</pinyin4j.version>
 		<dynamic-datasource-spring-boot-starter.version>3.0.0</dynamic-datasource-spring-boot-starter.version>
-		<guava.version>28.2-jre</guava.version>
+		<guava.version>29.0-jre</guava.version>
 	</properties>
 
 	<dependencies>
