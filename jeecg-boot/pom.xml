@@ -76,7 +76,7 @@
 		<shiro-spring-boot-starter.version>1.5.1</shiro-spring-boot-starter.version>
 		<shiro-redis.version>3.2.3</shiro-redis.version>
 		<hutool.version>5.2.5</hutool.version>
-		<httpclient.version>4.5.12</httpclient.version>
+		<httpclient.version>4.5.13</httpclient.version>
 		<knife4j.version>2.0.2</knife4j.version>
 		<p6spy.version>3.8.7</p6spy.version>
 		<!--        <liquibase-hibernate5.version>3.8</liquibase-hibernate5.version>-->
