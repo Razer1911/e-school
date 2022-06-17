@@ -71,7 +71,7 @@
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.8.1</aliyun.oss.version>
 		<qc.cos.version>5.6.5</qc.cos.version>
-		<fastjson.version>1.2.67</fastjson.version>
+		<fastjson.version>1.2.83</fastjson.version>
 		<java-jwt.version>3.10.1</java-jwt.version>
 		<shiro-spring-boot-starter.version>1.5.1</shiro-spring-boot-starter.version>
 		<shiro-redis.version>3.2.3</shiro-redis.version>
